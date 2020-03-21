@@ -34,7 +34,7 @@
 
     var color = d3.scaleLinear().domain([1, 26]).range(["white", "red"]);
 
-    d3.json("https://raw.githubusercontent.com/embs/coronaviz/files/pe-municipalities.geojson", function(error, municipalities) {
+    d3.json("https://raw.githubusercontent.com/embs/coronaviz/master/pe-municipalities.geojson", function(error, municipalities) {
       if(error) return console.log(error);
 
       svg.append("path")
