@@ -34,22 +34,36 @@
 
     var color = d3.scaleLinear().domain([1, 26]).range(["white", "red"]);
 
-    d3.json("https://raw.githubusercontent.com/embs/coronaviz/master/pe-municipalities.geojson", function(error, municipalities) {
-      if(error) return console.log(error);
+    var dataUrl = "https://raw.githubusercontent.com/embs/coronaviz/master/pe-cities-numbers.json";
+	d3.json(dataUrl, function(citiesNumbers) {
+      // Convert keys to match d.properties.NM_MUNICIP.
+      for (let [key, value] of Object.entries(citiesNumbers)) {
+        citiesNumbers[key.toUpperCase()] = value;
+      }
 
-      svg.append("path")
-         .datum({ type: "FeatureCollection", features: municipalities.features })
-         .attr("d", path)
-         .attr("class", "municipalities");
+      d3.json("https://raw.githubusercontent.com/embs/coronaviz/master/pe-municipalities.geojson", function(error, municipalities) {
+        if(error) return console.log(error);
 
-      svg.selectAll("path")
-        .data(municipalities.features)
-        .enter()
-        .append("path")
-        .attr("d", path)
-        .style("fill", function(d) {
-          return color(d.properties.NM_MUNICIP.replace(/\s+/g, '').length);
-        });
+        svg.append("path")
+           .datum({ type: "FeatureCollection", features: municipalities.features })
+           .attr("d", path)
+           .attr("class", "municipalities");
+
+        svg.selectAll("path")
+          .data(municipalities.features)
+          .enter()
+          .append("path")
+          .attr("d", path)
+          .style("fill", function(d) {
+            var cityNumbers = citiesNumbers[d.properties.NM_MUNICIP];
+
+            if(cityNumbers) {
+              return color(cityNumbers[2]);
+            } else {
+              return color(1);
+            }
+          });
+      });
     });
   </script>
 </body>
