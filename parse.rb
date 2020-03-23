@@ -1,4 +1,5 @@
 require 'byebug'
+require 'json'
 require 'pdf-reader'
 
 ROMAN_NUMERALS = %w[
@@ -18,7 +19,7 @@ ROMAN_NUMERALS = %w[
 
 reader = PDF::Reader.new('report-19.pdf')
 
-reader.pages.each_with_index do |page, index|
+cities_numbers = reader.pages.each_with_object({}).with_index do |(page, cities_numbers), index|
   next unless index == 3
 
   cities_indexes = 7..52
@@ -34,7 +35,10 @@ reader.pages.each_with_index do |page, index|
                   city_name.join(' ')
                 end
 
-    p city_name
-    p numbers
+    cities_numbers[city_name] = numbers
   end
+end
+
+File.open('pe-cities-numbers.json', 'w') do |f|
+  f.write(JSON.pretty_generate(cities_numbers))
 end
